@@ -1,62 +1,44 @@
 <script setup>
-import { ref } from 'vue'
+import { onMounted } from 'vue'
 
 const baseUrl = import.meta.env.BASE_URL
 
-const myRoles = [
+const roles = [
   "Gameplay Programming (C#)",
   "VR Mechanics & Physics",
   "Level Design & Lighting",
   "UI Integration"
 ]
 
-const projectTree = [
-  {
-    name: "nexus",
-    type: "root",
-    children: [
-      { name: "Builds", type: "folder" },
-      { name: "Library", type: "folder" },
-      { name: "Packages", type: "folder" },
-      {
-        name: "Assets",
-        type: "folder-open",
-        children: [
-          { name: "Oculus Hands", type: "folder" },
-          { name: "Prefabs", type: "folder" },
-          { name: "Scenes", type: "folder" },
-          { name: "Scripts", type: "folder" },
-          { name: "Materials", type: "folder" },
-          { name: "sounds", type: "folder" },
-          { name: "XR", type: "folder" },
-          { name: "gun", type: "folder" }
-        ]
-      },
-      { name: "ProjectSettings", type: "folder" }
-    ]
-  }
+const assets = [
+  { name: "Pistolet Laser", type: "Modèle 3D", img: baseUrl + "gun.png" },
+  { name: "Baril futuriste", type: "Modèle 3D", img: baseUrl + "barrel.png" },
+  { name: "Baril futuriste v2", type: "Modèle 3D", img: baseUrl + "barrel2.png" }
 ]
 
-const mainAssets = [
-  {
-    name: "Pistolet Laser",
-    role: "Modèle 3d",
-    img: baseUrl + "gun.png"
-  },
-  {
-    name: "Baril futuriste",
-    role: "Modèle 3d",
-    img: baseUrl + "barrel.png"
-  },
-  {
-    name: "Baril futuriste",
-    role: "Modèle 3d",
-    img: baseUrl + "barrel2.png"
-  }
+const stack = [
+  "Unity 2022.3.62f1",
+  "C# / MonoBehaviour",
+  "Meta XR Interaction SDK",
+  "Git / GitHub"
 ]
 
-const codeSnippet = `
-// CibleGlitch.cs
+const treeOutput = `nexus/
+├── Builds/
+├── Library/
+├── Packages/
+├── Assets/
+│   ├── Oculus Hands/
+│   ├── Prefabs/
+│   ├── Scenes/
+│   ├── Scripts/
+│   ├── Materials/
+│   ├── sounds/
+│   ├── XR/
+│   └── gun/
+└── ProjectSettings/`
+
+const codeSnippet = `// CibleGlitch.cs
 using UnityEngine;
 using System.Collections;
 
@@ -89,7 +71,7 @@ public class CibleGlitch : MonoBehaviour
         meshRenderer = GetComponent<MeshRenderer>();
         if (meshRenderer != null)
         {
-            materielInstance = meshRenderer.material; // Crée une instance du matériau
+            materielInstance = meshRenderer.material;
             couleurInitiale = materielInstance.GetColor("_BaseColor");
             intensiteEmissionInitiale = materielInstance.GetColor("_EmissionColor").r;
         }
@@ -226,7 +208,7 @@ public class CibleGlitch : MonoBehaviour
             }
 
             tempsEcoule += Time.deltaTime;
-            yield return new WaitForSeconds(0.05f); // 20 FPS pour l'effet glitch
+            yield return new WaitForSeconds(0.05f);
         }
 
         // Retour à la normale
@@ -248,231 +230,335 @@ public class CibleGlitch : MonoBehaviour
         }
     }
 }
-
 `
+
+onMounted(() => {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in-view')
+        observer.unobserve(entry.target)
+      }
+    })
+  }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' })
+
+  document.querySelectorAll('[data-reveal]').forEach(el => {
+    observer.observe(el)
+  })
+})
 </script>
 
 <template>
-  <div class="min-h-screen bg-black selection:bg-cyan-500 selection:text-black">
+  <div class="min-h-screen">
 
-    <nav class="fixed top-0 w-full z-50 border-b border-white/10 bg-black/80 backdrop-blur-md">
-      <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-        <span class="text-2xl font-bold tracking-widest neon-text text-white">nexus</span>
+    <!-- ═══════════════════ NAV ═══════════════════ -->
+    <nav class="fixed top-0 w-full z-50 bg-[#0a0a0a]/90 backdrop-blur-lg border-b border-border">
+      <div class="max-w-[1200px] mx-auto px-6 h-14 flex items-center justify-between">
+        <span class="font-display font-bold text-sm tracking-[0.3em] uppercase text-white">
+          Nexus
+        </span>
         <a
-            :href="baseUrl + 'wr507d_vr_ewen_davanzo.apk'"
-            download="wr507d_vr_ewen_davanzo.apk"
-            class="px-4 py-2 bg-white text-black font-bold rounded hover:bg-cyan-400 transition-colors duration-300"
+          :href="baseUrl + 'wr507d_vr_ewen_davanzo.apk'"
+          download="wr507d_vr_ewen_davanzo.apk"
+          class="bg-accent text-black text-[11px] font-bold tracking-wider uppercase px-5 py-2.5 hover:bg-white transition-colors duration-300"
         >
           Télécharger l'APK
         </a>
       </div>
     </nav>
 
-    <section class="relative h-screen flex flex-col items-center justify-center text-center px-4 overflow-hidden">
-      <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-purple-900/20 via-black to-black opacity-50"></div>
+    <!-- ═══════════════════ HERO ═══════════════════ -->
+    <section class="h-screen flex flex-col items-center justify-center text-center px-6 relative">
+      <span
+        class="font-mono text-[11px] tracking-[0.4em] uppercase text-accent mb-8"
+        data-reveal="fade"
+      >
+        VR Experience
+      </span>
 
-      <h1 class="text-7xl md:text-9xl font-black mb-6 tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-purple-600 animate-pulse">
-        nexus
+      <h1
+        class="font-display font-extrabold text-[clamp(4.5rem,15vw,13rem)] leading-[0.85] tracking-tighter uppercase text-white"
+        data-reveal="up"
+      >
+        NEXUS
       </h1>
-      <p class="text-xl md:text-2xl text-gray-400 max-w-2xl z-10">
-        60 secondes. Un pistolet laser.
-        <br>Visez le vert. Évitez le rouge.
+
+      <div
+        class="w-16 h-[1px] bg-accent mt-10 mb-10"
+        data-reveal="fade"
+        style="--delay: 0.2s"
+      ></div>
+
+      <p
+        class="text-lg md:text-xl text-[#888] max-w-lg leading-relaxed font-light"
+        data-reveal="up"
+        style="--delay: 0.3s"
+      >
+        60 secondes. Un pistolet laser.<br>
+        <span class="text-[#4ade80]">Visez le vert.</span>
+        <span class="text-[#f87171]">Évitez le rouge.</span>
       </p>
-    </section>
 
-    <section class="max-w-6xl mx-auto px-6 py-20 grid md:grid-cols-2 gap-16 items-center">
-      <div>
-        <h2 class="text-3xl font-bold mb-6 text-cyan-400">Le Gameplay</h2>
-        <p class="text-gray-300 leading-relaxed mb-6">
-          Nexus est un jeu de tir rythmé en VR. Une partie dure exactement <strong>1 minute</strong>.
-          Le joueur doit scanner son environnement, récupérer un pistolet laser et tirer sur un maximum de <span class="text-green-400">cibles vertes</span> qui apparaissent avec des effets de glitch.
-          <br><br>
-          Attention : toucher une <span class="text-red-500">cible rouge</span> fait perdre des points.
-        </p>
-      </div>
-
-      <div class="aspect-[4/3] bg-black rounded-xl border border-white/10 overflow-hidden shadow-[0_0_30px_rgba(0,240,255,0.1)]">
-
-        <video
-            controls
-            playsinline
-            class="w-full h-full object-contain"
-            :src="baseUrl + 'gameplay.mp4'"
-        >
-          Votre navigateur ne supporte pas la vidéo.
-        </video>
-
+      <!-- Scroll indicator -->
+      <div class="absolute bottom-10 flex flex-col items-center gap-3">
+        <span class="font-mono text-[9px] tracking-[0.3em] text-[#333] uppercase">Scroll</span>
+        <div class="w-px h-10 scroll-line"></div>
       </div>
     </section>
 
-    <section class="bg-gray-900/30 py-20 border-y border-white/5">
-      <div class="max-w-7xl mx-auto px-6">
-        <h2 class="text-3xl font-bold mb-10 text-center text-white">Assets utilisés</h2>
-
-        <div class="grid md:grid-cols-3 gap-6">
-          <div v-for="(asset, index) in mainAssets" :key="index" class="col-span-1 border border-white/10 rounded-lg p-2 bg-black/50 hover:border-cyan-400/50 transition-colors duration-300">
-            <h3 class="text-sm font-mono text-gray-400 mb-2 border-b border-white/10 pb-2 flex justify-between">
-              <span>{{ asset.name }}</span>
-            </h3>
-            <div class="aspect-video bg-gray-800 rounded flex items-center justify-center overflow-hidden relative group">
-              <img :src="asset.img" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-300" alt="Asset Preview">
-            </div>
-            <p class="text-xs text-cyan-400 mt-2 text-right">{{ asset.role }}</p>
-          </div>
+    <!-- ═══════════════════ 01 — GAMEPLAY ═══════════════════ -->
+    <section class="border-t border-border">
+      <div class="max-w-[1200px] mx-auto px-6 py-24 md:py-32">
+        <div class="flex items-baseline gap-4 mb-14" data-reveal="up">
+          <span class="font-mono text-accent text-sm">01</span>
+          <h2 class="font-display font-bold text-3xl md:text-4xl text-white">Le Gameplay</h2>
         </div>
 
+        <div class="grid md:grid-cols-2 gap-12 md:gap-16 items-center">
+          <div data-reveal="up" style="--delay: 0.1s">
+            <p class="text-[#999] leading-relaxed text-base md:text-lg">
+              Nexus est un jeu de tir rythmé en VR. Une partie dure exactement
+              <strong class="text-white font-semibold">1 minute</strong>.
+              Le joueur scanne son environnement, récupère un pistolet laser et tire
+              sur un maximum de
+              <span class="text-[#4ade80]">cibles vertes</span>
+              qui apparaissent avec des effets de glitch.
+            </p>
+            <p class="text-[#999] leading-relaxed mt-5 text-base md:text-lg">
+              Attention : toucher une
+              <span class="text-[#f87171]">cible rouge</span>
+              fait perdre des points.
+            </p>
+          </div>
+
+          <div
+            class="aspect-[4/3] bg-surface border border-border overflow-hidden"
+            data-reveal="up"
+            style="--delay: 0.2s"
+          >
+            <video
+              controls
+              playsinline
+              class="w-full h-full object-contain"
+              :src="baseUrl + 'gameplay.mp4'"
+            >
+              Votre navigateur ne supporte pas la vidéo.
+            </video>
+          </div>
+        </div>
       </div>
     </section>
 
-    <section class="max-w-7xl mx-auto px-6 py-20 border-t border-white/5">
-        <h2 class="text-3xl font-bold mb-10 text-center text-white">Environnement de Développement</h2>
+    <!-- ═══════════════════ 02 — ASSETS ═══════════════════ -->
+    <section class="border-t border-border bg-surface/40">
+      <div class="max-w-[1200px] mx-auto px-6 py-24 md:py-32">
+        <div class="flex items-baseline gap-4 mb-14" data-reveal="up">
+          <span class="font-mono text-accent text-sm">02</span>
+          <h2 class="font-display font-bold text-3xl md:text-4xl text-white">Assets</h2>
+        </div>
 
-        <div class="grid lg:grid-cols-3 gap-8">
-
-          <div class="lg:col-span-2 space-y-4">
-            <div class="flex justify-between items-end">
-              <h3 class="text-xl font-bold text-cyan-400">Interface Unity</h3>
-              <span class="text-xs text-gray-500 font-mono">SCENE VIEW / INSPECTOR</span>
-            </div>
-
-            <div class="bg-gray-900 rounded-lg border border-white/10 p-1 overflow-hidden shadow-2xl">
+        <div class="grid md:grid-cols-3 gap-4">
+          <div
+            v-for="(asset, i) in assets"
+            :key="i"
+            class="group border border-border bg-[#0a0a0a] hover:border-accent/30 transition-all duration-500"
+            data-reveal="up"
+            :style="`--delay: ${0.1 + i * 0.1}s`"
+          >
+            <div class="aspect-[4/3] overflow-hidden bg-[#0d0d0d]">
               <img
-                  :src="baseUrl + 'unity-interface.png'"
-                  alt="Interface Unity"
-                  class="w-full h-auto rounded opacity-80 hover:opacity-100 transition-opacity duration-500"
+                :src="asset.img"
+                :alt="asset.name"
+                class="w-full h-full object-cover opacity-50 group-hover:opacity-90 group-hover:scale-[1.03] transition-all duration-700 ease-out"
               >
             </div>
-            <p class="text-sm text-gray-400 italic">
+            <div class="p-4 flex justify-between items-center border-t border-border">
+              <span class="text-sm font-medium text-white">{{ asset.name }}</span>
+              <span class="font-mono text-[10px] text-[#444]">{{ asset.type }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════ 03 — DÉVELOPPEMENT ═══════════════════ -->
+    <section class="border-t border-border">
+      <div class="max-w-[1200px] mx-auto px-6 py-24 md:py-32">
+        <div class="flex items-baseline gap-4 mb-14" data-reveal="up">
+          <span class="font-mono text-accent text-sm">03</span>
+          <h2 class="font-display font-bold text-3xl md:text-4xl text-white">Développement</h2>
+        </div>
+
+        <div class="grid lg:grid-cols-3 gap-6">
+          <!-- Unity screenshot -->
+          <div class="lg:col-span-2" data-reveal="up" style="--delay: 0.1s">
+            <div class="flex justify-between items-center mb-3">
+              <span class="text-sm font-medium text-white">Interface Unity</span>
+              <span class="font-mono text-[10px] text-[#333] tracking-wider uppercase">Scene View / Inspector</span>
+            </div>
+            <div class="border border-border overflow-hidden bg-surface">
+              <img
+                :src="baseUrl + 'unity-interface.png'"
+                alt="Interface Unity"
+                class="w-full h-auto opacity-70 hover:opacity-100 transition-opacity duration-700"
+              >
+            </div>
+            <p class="text-[11px] text-[#444] mt-3 font-mono">
               Vue de la scène principale avec les gizmos de navigation et les zones de spawn.
             </p>
           </div>
 
-          <div class="lg:col-span-1">
-            <div class="flex justify-between items-end mb-4">
-              <h3 class="text-xl font-bold text-purple-400">Arborescence</h3>
-              <span class="text-xs text-gray-500 font-mono">FILE SYSTEM</span>
+          <!-- File tree -->
+          <div class="lg:col-span-1" data-reveal="up" style="--delay: 0.2s">
+            <div class="flex justify-between items-center mb-3">
+              <span class="text-sm font-medium text-white">Arborescence</span>
+              <span class="font-mono text-[10px] text-[#333] tracking-wider uppercase">File System</span>
+            </div>
+            <div class="border border-border bg-[#0c0c0c] p-5 min-h-[300px] lg:h-[calc(100%-2rem)]">
+              <div class="flex gap-1.5 mb-5 pb-3 border-b border-border">
+                <div class="w-2.5 h-2.5 rounded-full bg-[#ff5f57]"></div>
+                <div class="w-2.5 h-2.5 rounded-full bg-[#febc2e]"></div>
+                <div class="w-2.5 h-2.5 rounded-full bg-[#28c840]"></div>
+              </div>
+              <pre class="font-mono text-xs text-[#666] leading-relaxed whitespace-pre select-all">{{ treeOutput }}</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════ 04 — CODE ═══════════════════ -->
+    <section class="border-t border-border bg-surface/40">
+      <div class="max-w-[1000px] mx-auto px-6 py-24 md:py-32">
+        <div class="flex items-baseline gap-4 mb-14" data-reveal="up">
+          <span class="font-mono text-accent text-sm">04</span>
+          <h2 class="font-display font-bold text-3xl md:text-4xl text-white">Code</h2>
+        </div>
+
+        <div class="border border-border overflow-hidden" data-reveal="up" style="--delay: 0.1s">
+          <!-- Editor title bar -->
+          <div class="flex items-center justify-between px-4 py-3 bg-[#0f0f0f] border-b border-border">
+            <div class="flex items-center gap-3">
+              <div class="flex gap-1.5">
+                <div class="w-2.5 h-2.5 rounded-full bg-[#ff5f57]"></div>
+                <div class="w-2.5 h-2.5 rounded-full bg-[#febc2e]"></div>
+                <div class="w-2.5 h-2.5 rounded-full bg-[#28c840]"></div>
+              </div>
+              <span class="font-mono text-xs text-[#555]">CibleGlitch.cs</span>
+            </div>
+            <span class="font-mono text-[10px] text-[#2a2a2a] tracking-wider uppercase">C#</span>
+          </div>
+
+          <!-- Code content -->
+          <pre class="p-6 overflow-x-auto overflow-y-auto max-h-[520px] text-[13px] font-mono text-[#999] leading-relaxed bg-[#0a0a0a]"><code>{{ codeSnippet }}</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════ 05 — DÉVELOPPEUR & STACK ═══════════════════ -->
+    <section class="border-t border-border">
+      <div class="max-w-[1200px] mx-auto px-6 py-24 md:py-32">
+        <div class="grid md:grid-cols-2 gap-16">
+
+          <!-- Developer -->
+          <div data-reveal="up">
+            <div class="flex items-baseline gap-4 mb-10">
+              <span class="font-mono text-accent text-sm">05</span>
+              <h2 class="font-display font-bold text-3xl text-white">Le Développeur</h2>
             </div>
 
-            <div class="bg-[#0c0c0c] rounded-lg border border-white/10 p-6 font-mono text-sm h-full shadow-[inset_0_0_20px_rgba(0,0,0,0.8)] overflow-y-auto max-h-[436px]">
-              <div class="flex gap-2 mb-4 border-b border-white/5 pb-2">
-                <div class="w-2 h-2 rounded-full bg-red-500"></div>
-                <div class="w-2 h-2 rounded-full bg-yellow-500"></div>
-                <div class="w-2 h-2 rounded-full bg-green-500"></div>
-              </div>
-
-              <div class="space-y-1">
-                <div v-for="root in projectTree" :key="root.name">
-                  <div class="text-gray-300 font-bold mb-2">📁 {{ root.name }}</div>
-
-                  <div v-for="child in root.children" :key="child.name" class="ml-4 border-l border-white/10 pl-4">
-                    <div :class="child.type === 'folder-open' ? 'text-white' : 'text-gray-500'">
-                      {{ child.type === 'folder-open' ? '📂' : '📁' }} {{ child.name }}
-                    </div>
-
-                    <div v-if="child.children" class="ml-4 mt-1 space-y-1 border-l border-cyan-500/20 pl-4">
-                      <div v-for="sub in child.children" :key="sub.name" class="text-cyan-300/80 hover:text-cyan-300 hover:bg-white/5 cursor-default transition-colors rounded px-1">
-                        ↳ 📁 {{ sub.name }}
-                      </div>
-                      <div class="text-gray-600 italic text-xs mt-2 ml-2">... et autres ressources</div>
-                    </div>
-                  </div>
-
+            <div class="border border-border p-6 hover:border-accent/20 transition-colors duration-500">
+              <div class="flex items-center gap-4 mb-6">
+                <div class="w-11 h-11 bg-accent flex items-center justify-center text-black font-display font-bold text-lg">
+                  E
+                </div>
+                <div>
+                  <h3 class="text-lg font-display font-bold text-white leading-tight">Ewen D'Avanzo</h3>
+                  <span class="font-mono text-[10px] tracking-[0.15em] uppercase text-accent">Solo Developer</span>
                 </div>
               </div>
 
+              <p class="text-sm text-[#666] mb-6 leading-relaxed">
+                Projet réalisé intégralement en autonomie. Responsable de l'ensemble du pipeline de production :
+              </p>
+
+              <ul class="space-y-3">
+                <li
+                  v-for="role in roles"
+                  :key="role"
+                  class="flex items-center gap-3 text-sm text-[#bbb]"
+                >
+                  <span class="w-1 h-1 bg-accent flex-shrink-0"></span>
+                  {{ role }}
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Stack -->
+          <div data-reveal="up" style="--delay: 0.15s">
+            <div class="flex items-baseline gap-4 mb-10">
+              <span class="font-mono text-accent text-sm invisible">05</span>
+              <h2 class="font-display font-bold text-3xl text-white">Stack Technique</h2>
+            </div>
+
+            <div class="space-y-3">
+              <div
+                v-for="(tech, i) in stack"
+                :key="i"
+                class="flex items-center gap-4 p-4 border border-border hover:border-accent/20 transition-colors duration-500"
+              >
+                <span class="font-mono text-xs text-accent w-6">{{ String(i + 1).padStart(2, '0') }}</span>
+                <span class="text-sm text-[#bbb]">{{ tech }}</span>
+              </div>
             </div>
           </div>
 
         </div>
-      </section>
-
-    <section class="max-w-5xl mx-auto px-6 py-20">
-      <h2 class="text-3xl font-bold mb-6 text-purple-500">Exemple de code (C#)</h2>
-      <div class="bg-[#1e1e1e] rounded-xl overflow-hidden shadow-2xl border border-white/10">
-        <div class="flex items-center px-4 py-2 bg-[#252526] border-b border-black">
-          <div class="flex gap-2">
-            <div class="w-3 h-3 rounded-full bg-red-500"></div>
-            <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
-            <div class="w-3 h-3 rounded-full bg-green-500"></div>
-          </div>
-          <span class="ml-4 text-xs text-gray-400 font-mono">Target.cs</span>
-        </div>
-        <pre class="p-6 overflow-x-auto text-sm font-mono text-gray-300"><code>{{ codeSnippet }}</code></pre>
       </div>
     </section>
 
-    <section class="max-w-7xl mx-auto px-6 py-20 grid md:grid-cols-2 gap-12">
+    <!-- ═══════════════════ FOOTER / DOWNLOAD ═══════════════════ -->
+    <footer class="border-t border-border">
+      <div class="max-w-[1200px] mx-auto px-6 py-24 md:py-32 text-center">
+        <span
+          class="font-mono text-[11px] text-accent tracking-[0.3em] uppercase block mb-6"
+          data-reveal="fade"
+        >
+          Meta Quest 2 / 3
+        </span>
 
-      <div>
-        <h3 class="text-2xl font-bold mb-6 border-l-4 border-cyan-400 pl-4 text-white">Le Développeur</h3>
-
-        <div class="bg-white/5 p-6 rounded-lg border border-white/10 hover:border-cyan-400/30 transition-colors">
-          <div class="flex items-center gap-4 mb-6">
-            <div class="w-12 h-12 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-full flex items-center justify-center text-black font-black text-xl">
-              E
-            </div>
-            <div>
-              <h4 class="text-xl font-bold text-white">Ewen D'Avanzo</h4>
-              <span class="px-2 py-0.5 rounded text-[10px] uppercase font-bold bg-cyan-400/20 text-cyan-400 border border-cyan-400/30">
-                Solo Developer
-              </span>
-            </div>
-          </div>
-
-          <p class="text-sm text-gray-400 mb-4">
-            Projet réalisé intégralement en autonomie. Responsable de l'ensemble du pipeline de production :
-          </p>
-
-          <ul class="space-y-2">
-            <li v-for="role in myRoles" :key="role" class="flex items-center gap-3 text-gray-300 text-sm">
-              <span class="w-1.5 h-1.5 bg-cyan-400 rounded-full"></span>
-              {{ role }}
-            </li>
-          </ul>
-        </div>
-      </div>
-
-      <div>
-        <h3 class="text-2xl font-bold mb-6 border-l-4 border-purple-500 pl-4 text-white">Stack Technique</h3>
-        <div class="grid grid-cols-1 gap-3">
-          <div class="flex items-center gap-3 text-gray-400 bg-black/40 p-3 rounded border border-white/5">
-            <span class="w-2 h-2 bg-purple-500 rounded-full"></span>
-            Unity 2022.3.62f1
-          </div>
-          <div class="flex items-center gap-3 text-gray-400 bg-black/40 p-3 rounded border border-white/5">
-            <span class="w-2 h-2 bg-purple-500 rounded-full"></span>
-            C# / Monobehaviour
-          </div>
-          <div class="flex items-center gap-3 text-gray-400 bg-black/40 p-3 rounded border border-white/5">
-            <span class="w-2 h-2 bg-purple-500 rounded-full"></span>
-            Meta XR Interaction SDK
-          </div>
-          <div class="flex items-center gap-3 text-gray-400 bg-black/40 p-3 rounded border border-white/5">
-            <span class="w-2 h-2 bg-purple-500 rounded-full"></span>
-            Git / GitHub
-          </div>
-        </div>
-      </div>
-
-    </section>
-
-    <footer id="download" class="bg-gradient-to-t from-cyan-900/20 to-black py-24 text-center border-t border-white/10">
-      <h2 class="text-4xl font-bold mb-8 text-white">Prêt à tester Nexus ?</h2>
-      <div class="flex flex-col items-center gap-4">
+        <h2
+          class="font-display font-bold text-4xl md:text-5xl text-white mb-12"
+          data-reveal="up"
+          style="--delay: 0.1s"
+        >
+          Prêt à tester Nexus ?
+        </h2>
 
         <a
-            :href="baseUrl + 'wr507d_vr_ewen_davanzo.apk'"
-            download="wr507d_vr_ewen_davanzo.apk"
-            class="group relative px-8 py-4 bg-white text-black font-black text-xl rounded hover:scale-105 transition-transform duration-200 inline-block cursor-pointer"
+          :href="baseUrl + 'wr507d_vr_ewen_davanzo.apk'"
+          download="wr507d_vr_ewen_davanzo.apk"
+          class="inline-block bg-accent text-black font-display font-bold text-base tracking-wide uppercase px-10 py-4 hover:bg-white transition-colors duration-300"
+          data-reveal="up"
+          style="--delay: 0.2s"
         >
-          <span class="relative z-10">Télécharger le projet</span>
-          <div class="absolute inset-0 bg-cyan-400 blur-lg opacity-50 group-hover:opacity-100 transition-opacity"></div>
+          Télécharger le projet
         </a>
 
-        <p class="text-sm text-gray-500 mt-4">Version 1.0.0 • Compatible Meta Quest 2/3</p>
+        <p
+          class="font-mono text-[11px] text-[#333] mt-8"
+          data-reveal="fade"
+          style="--delay: 0.3s"
+        >
+          Version 1.0.0
+        </p>
       </div>
-      <div class="mt-20 text-gray-600 text-sm">
-        © 2026 Ewen D'Avanzo | Tous droits réservés.
+
+      <div class="border-t border-border py-6 text-center">
+        <p class="font-mono text-[11px] text-[#2a2a2a]">
+          © 2026 Ewen D'Avanzo
+        </p>
       </div>
     </footer>
 
@@ -480,7 +566,13 @@ public class CibleGlitch : MonoBehaviour
 </template>
 
 <style scoped>
-.neon-text {
-  text-shadow: 0 0 10px rgba(34, 211, 238, 0.5);
+.scroll-line {
+  background: linear-gradient(to bottom, var(--color-accent, #c8ff00) 0%, transparent 100%);
+  animation: scroll-pulse 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes scroll-pulse {
+  0%, 100% { opacity: 0.15; }
+  50% { opacity: 0.6; }
 }
 </style>
